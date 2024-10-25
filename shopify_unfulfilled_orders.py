@@ -11,8 +11,8 @@ def access_secret(secret_name):
     return response.payload.data.decode("UTF-8")
 
 
-SHOPIFY_API_KEY = access_secret("SHOPIFY_API_KEY")
-SHOPIFY_PASSWORD = access_secret("SHOPIFY_PASSWORD")
+SHOPIFY_API_KEY = access_secret("SHOPIFY_API_SECRET")
+SHOPIFY_PASSWORD = access_secret("SHOPIFY_ACCESS_TOKEN")
 SHOPIFY_STORE_NAME = access_secret("SHOPIFY_STORE_NAME")
 
 
