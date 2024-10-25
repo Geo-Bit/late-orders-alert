@@ -29,7 +29,23 @@ This project is a Google Cloud Function that automates the process of checking f
   source venv/bin/activate
   pip install -r requirements.txt
   ```
+- Deploy the Cloud Function
+  ```sh
+  gcloud functions deploy check_unfulfilled_orders --runtime python39 --trigger-http --allow-unauthenticated --project <GCP_project_name> --service-account <GCP_service_account_name>
+  ```
 
-## Deploy the Cloud Function
+### 4. Scheduling the Function (Optional)
 
-gcloud functions deploy check_unfulfilled_orders --runtime python39 --trigger-http --allow-unauthenticated
+- Use Google Cloud Scheduler to run the function periodically.
+
+## Files
+
+- `shopify_unfulfilled_orders.py`: Main script for checking unfulfilled orders.
+
+- `requirements.txt`: List of dependencies.
+
+- `README.md`: Project documentation.
+
+## Security
+
+Sensitive information is stored in Google Secret Manager, ensuring that credentials are protected and only accessible by authorized services.
