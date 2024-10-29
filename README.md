@@ -1,12 +1,20 @@
 # Shopify Unfulfilled Orders Alert
 
-This project is a Google Cloud Function that automates the process of checking for unfulfilled Shopify orders and sends notifications if any orders remain unfulfilled for over 10 days. Sensitive credentials are securely stored in Google Secret Manager.
+This project automates monitoring of unfulfilled Shopify orders and sends email alerts when an order remains unfulfilled for a specified number of days. The solution leverages Google Cloud services, including Secret Manager, Cloud Storage, and Cloud Functions, to securely store sensitive information, manage alerts, and run scheduled checks. Alerts are sent as a summary email using Twilio SendGrid, helping to reduce the number of emails while ensuring prompt attention to outstanding orders.
+
+Core features include:
+
+- Secure Credential Storage: Using Google Secret Manager to keep API keys and credentials secure.
+- Automated Order Checking: Running scheduled checks on unfulfilled orders using Google Cloud Functions and Cloud Scheduler.
+- Alert Management: Tracking previously alerted orders using Google Cloud Storage to avoid duplicate notifications.
+- Email Notification: Sending summary alerts to recipients using SendGrid for any orders that have not been fulfilled for the specified time period.
 
 ## Prerequisites
 
-- Google Cloud account with Secret Manager and Cloud Functions enabled
-- Python 3.x
-- Shopify store with API credentials
+- **Google Cloud Project**: Make sure you have a Google Cloud project set up.
+- **Secret Manager**: You need to use Google Secret Manager to store sensitive information like API keys, credentials, etc.
+- **SendGrid Account**: Set up a SendGrid account to send email alerts.
+- **Shopify API Access**: Ensure you have Shopify API credentials to access order information.
 
 ## Setup Instructions
 
@@ -31,12 +39,12 @@ This project is a Google Cloud Function that automates the process of checking f
   ```
 - Deploy the Cloud Function
   ```sh
-  gcloud functions deploy check_unfulfilled_orders --runtime python39 --trigger-http --allow-unauthenticated --project <GCP_project_name> --service-account <GCP_service_account_name> --env-vars-file .env.yaml
+  gcloud functions deploy check_unfulfilled_orders --runtime python39 --trigger-http --entry-point main --allow-unauthenticated --project <GCP_project_name> --service-account <GCP_service_account_name> --env-vars-file .env.yaml
   ```
 
 ### 4. Scheduling the Function (Optional)
 
-- Use Google Cloud Scheduler to run the function periodically.
+- To run the function on a schedule (e.g., twice a day), use Google Cloud Scheduler to trigger the Cloud Function at the desired intervals.
 
 ## Files
 
@@ -44,7 +52,14 @@ This project is a Google Cloud Function that automates the process of checking f
 
 - `requirements.txt`: List of dependencies.
 
-- `.env.yaml` : Contains required environment variables (GOOGLE_CLOUD_PROJECT, GCS_BUCKET_NAME)
+- `.env.yaml` : Contains required environment variables:
+
+  ```yaml
+  GOOGLE_CLOUD_PROJECT: <GCP Project ID>
+  GCS_BUCKET_NAME: <GCP bucket name>
+  ALERT_RECIPIENT_EMAIL: <Comma separated list of recipient emails>
+  ALERT_SENDER_EMAIL: <Sender email address>
+  ```
 
 - `README.md`: Project documentation.
 
