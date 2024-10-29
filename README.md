@@ -21,7 +21,7 @@ Core features include:
 ### 1. Store Secrets in Google Secret Manager
 
 - Navigate to Google Cloud Console and go to **Secret Manager**.
-- Create secrets for `SHOPIFY_API_KEY`, `SHOPIFY_PASSWORD`, and `SHOPIFY_STORE_NAME`.
+- Create secrets for `SHOPIFY_API_KEY`, `SHOPIFY_PASSWORD`, and `SHOPIFY_STORE_NAME`, and `SENDGRID_API_KEY`.
 
 ### 2. Grant Access to Secrets
 
@@ -56,7 +56,7 @@ Core features include:
 
   ```yaml
   GOOGLE_CLOUD_PROJECT: <GCP Project ID>
-  GCS_BUCKET_NAME: <GCP bucket name>
+  GCS_BUCKET_NAME: <GCP bucket name where alerts.json is stored>
   ALERT_RECIPIENT_EMAIL: <Comma separated list of recipient emails>
   ALERT_SENDER_EMAIL: <Sender email address>
   ```
@@ -65,4 +65,4 @@ Core features include:
 
 ## Security
 
-Sensitive information is stored in Google Secret Manager, ensuring that credentials are protected and only accessible by authorized services.
+Sensitive information is stored in Google Secret Manager, ensuring that credentials are protected and only accessible by authorized services. Future enhancements will include additional security around the Google Cloud Run Function itself.
