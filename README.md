@@ -31,7 +31,7 @@ This project is a Google Cloud Function that automates the process of checking f
   ```
 - Deploy the Cloud Function
   ```sh
-  gcloud functions deploy check_unfulfilled_orders --runtime python39 --trigger-http --allow-unauthenticated --project <GCP_project_name> --service-account <GCP_service_account_name>
+  gcloud functions deploy check_unfulfilled_orders --runtime python39 --trigger-http --allow-unauthenticated --project <GCP_project_name> --service-account <GCP_service_account_name> --env-vars-file .env.yaml
   ```
 
 ### 4. Scheduling the Function (Optional)
@@ -43,6 +43,8 @@ This project is a Google Cloud Function that automates the process of checking f
 - `shopify_unfulfilled_orders.py`: Main script for checking unfulfilled orders.
 
 - `requirements.txt`: List of dependencies.
+
+- `.env.yaml` : Contains required environment variables (GOOGLE_CLOUD_PROJECT, GCS_BUCKET_NAME)
 
 - `README.md`: Project documentation.
 

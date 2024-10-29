@@ -1,2 +1,5 @@
 google-cloud-secret-manager
+google-cloud-storage
+requests
+google-cloud-secret-manager
 requests
