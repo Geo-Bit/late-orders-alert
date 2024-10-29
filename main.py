@@ -1,6 +1,5 @@
 import requests
 import datetime
-import logging
 from google.cloud import secretmanager
 from google.cloud import storage
 import os
@@ -10,6 +9,9 @@ import json
 storage_client = storage.Client()
 bucket_name = os.getenv('GCS_BUCKET_NAME')
 bucket = storage_client.bucket(bucket_name)
+
+# Fulfillment SLA
+fulfillment_day_threshold = 5
 
 # Load previously alert data from Google Cloud Storage
 
@@ -47,8 +49,11 @@ SHOPIFY_ACCESS_TOKEN = access_secret("SHOPIFY_ACCESS_TOKEN")
 print("Accessed SHOPIFY_ACCESS_TOKEN from Secret Manager.")
 SHOPIFY_STORE_NAME = access_secret("SHOPIFY_STORE_NAME")
 print("Accessed SHOPIFY_STORE_NAME from Secret Manager.")
+SENDGRID_API_KEY = access_secret("SENDGRID_API_KEY")
+print("Accessed SENDGRID_API_KEY from Secret Manager.")
 
 def check_unfulfilled_orders():
+
     print("Checking for unfulfilled orders...")
     headers = {
         "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN
@@ -57,7 +62,7 @@ def check_unfulfilled_orders():
     params = {
         "status": "open",
         "fulfillment_status": "unfulfilled",
-        "created_at_max": (datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
+        "created_at_max": (datetime.datetime.now() - datetime.timedelta(days=fulfillment_day_threshold)).isoformat()
     }
     print("Sending request to Shopify API...")
     response = requests.get(url, headers=headers, params=params)
@@ -81,16 +86,39 @@ def check_unfulfilled_orders():
     save_alerted_orders(alerted_orders)
 
 def send_notification(orders):
-    print("Sending notifications for unfulfilled orders...")
     for order in orders:
         message = f"Order {order['order_number']} has been unfulfilled for over 10 days."
         print(f"Notification: {message}")
-        # Optionally, integrate with an email or SMS service here
+        send_email_alert(order)
 
-def main(request):
+def send_email_alert(order):
+    from sendgrid import SendGridAPIClient
+    from sendgrid.helpers.mail import Mail
+
+    sender_email = os.getenv('ALERT_SENDER_EMAIL')
+    recipient_email = os.getenv('ALERT_RECIPIENT_EMAIL')
+
+    subject = f"Unfulfilled Order Alert: Order {order['order_number']}"
+    body = f"Order {order['order_number']} has been unfulfilled for over {fulfillment_day_threshold} days. Please take action."
+
+    message = Mail(
+        from_email=sender_email,
+        to_emails=recipient_email,
+        subject=subject,
+        plain_text_content=body
+    )
+
+    try:
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        response = sg.send(message)
+        print(f"Email alert sent successfully for Order {order['order_number']}")
+    except Exception as e:
+        print(f"Failed to send email alert: {e}")
+
+def main():
     print("Starting main function...")
     check_unfulfilled_orders()
     return "Check complete"
 
 # Explicitly call main function for testing purposes
-main("123")
+main()
